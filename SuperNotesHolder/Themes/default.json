@@ -1,0 +1,10 @@
+﻿{
+  "preview.textControl.backColor": "#ffffff",
+  "preview.textControl.foreColor": "#000000",
+
+  "preview.textControl.hoverBackColor": "#C9E0FF",
+  "preview.textControl.hoverForeColor": "#000000",
+
+  "preview.textControl.selectBackColor": "#D6E1F1",
+  "preview.textControl.selectForeColor": "#111111"
+}
