@@ -36,10 +36,8 @@ namespace SuperNotesHolder
 
 
         public void SetText(string text)
-        {
-            //textControl.ReadOnly = false;
-            textControl.Text = text;
-            //textControl.ReadOnly = true;
+        {            
+            textControl.Text = text;         
         }
 
         private void textControl_Click(object sender, EventArgs e)

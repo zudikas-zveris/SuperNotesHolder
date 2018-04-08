@@ -14,6 +14,7 @@ using SuperNotesHolder.Controllers;
 using SuperNotesHolder.Models;
 using Newtonsoft.Json;
 using SuperNotesHolder.Forms;
+using SuperNotesHolder.Utils;
 
 namespace SuperNotesHolder
 {
@@ -29,12 +30,14 @@ namespace SuperNotesHolder
         }
 
         private const int SNAP_DIST = 50;
+        private const int DOCK_LINE_WIDTH = 3;
+
 
         private int normalHeight;
         private int normalWidth;
         private int normalTop;
         private int normalLeft;
-
+        private bool isExpanded;
         private DockType dockLocation;
 
         private NotesController notesController;
@@ -43,15 +46,19 @@ namespace SuperNotesHolder
         {
             InitializeComponent();
 
+            HotKeyManager.MainForm = this;
+
             normalHeight = Height;
             normalWidth = Width;
             normalTop = Top;
             normalLeft = Left;
-            dockLocation = DockType.None;            
+            dockLocation = DockType.None;
+
+            isExpanded = true;
 
             notesController = new NotesController();
             notesController.LoadNotes();
-            FillNotes();
+            FillNotes();            
         }
 
 
@@ -126,18 +133,18 @@ namespace SuperNotesHolder
 
         private void MainForm_ResizeEnd(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Normal)
+            if (WindowState == FormWindowState.Normal && isExpanded)
             {
                 normalHeight = Height;
                 normalWidth = Width;
                 normalTop = Top;
-                normalLeft = Left;
+                normalLeft = Left;                
             }
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Normal)
+            if (WindowState == FormWindowState.Normal && isExpanded)
             {
                 normalHeight = Height;
                 normalWidth = Width;
@@ -178,6 +185,8 @@ namespace SuperNotesHolder
 
         private void FormExpand(bool value)
         {
+            isExpanded = value;
+
             if (value)
             {
                 if (WindowState == FormWindowState.Normal)
@@ -197,33 +206,32 @@ namespace SuperNotesHolder
                     return;
 
                 this.AutoScrollPosition = new Point(0, 0);
-                FormBorderStyle = FormBorderStyle.None;
-                //this.Padding = new Padding(10);
+                FormBorderStyle = FormBorderStyle.None;                
                 BackColor = Color.Red;
 
                 if (dockLocation == DockType.Top)
                 {                    
-                    this.Padding = new Padding(0,10,0,0);
-                    Height = 5;
+                    this.Padding = new Padding(0, DOCK_LINE_WIDTH, 0,0);
+                    Height = DOCK_LINE_WIDTH;
                 }
                 else if (dockLocation == DockType.Left) 
                 {
-                    this.Padding = new Padding(10, 0, 0, 0);
-                    Width = 5;
+                    this.Padding = new Padding(DOCK_LINE_WIDTH, 0, 0, 0);
+                    Width = DOCK_LINE_WIDTH;
                     Screen scn = Screen.FromPoint(this.Location);
                     this.Left = scn.Bounds.Left;
                 }
                 else if (dockLocation == DockType.Right)
                 {
-                    this.Padding = new Padding(10, 0, 0, 0);
-                    Width = 5;
+                    this.Padding = new Padding(DOCK_LINE_WIDTH, 0, 0, 0);
+                    Width = DOCK_LINE_WIDTH;
                     Screen scn = Screen.FromPoint(this.Location);
                     this.Left = scn.Bounds.Right - Width;
                 }
                 else if (dockLocation == DockType.Bottom)
                 {
-                    this.Padding = new Padding(0, 10, 0, 0);
-                    Height = 5;
+                    this.Padding = new Padding(0, DOCK_LINE_WIDTH, 0, 0);
+                    Height = DOCK_LINE_WIDTH;
                     Screen scn = Screen.FromPoint(this.Location);
                     this.Top = scn.Bounds.Bottom - Height;
                 }
@@ -256,6 +264,8 @@ namespace SuperNotesHolder
                 };
                 notesPanel.Controls.Add(notes);
             }
+
+            InitHotKeys();
         }
 
         private void LoadMainFormSettings()
@@ -299,6 +309,9 @@ namespace SuperNotesHolder
 
         private void ShowNoteEditControl(Note note)
         {
+
+            ClearHotKeys();
+
             for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
             {
                 Control ctrl = notesPanel.Controls[i];
@@ -315,20 +328,47 @@ namespace SuperNotesHolder
 
             editCtrl.closeButton.Click += (s, e) => {
                 notesController.DeleteNote(note);
-                this.notesPanel.Controls.Remove(editCtrl);
-                FillNotes();
+                this.notesPanel.Controls.Remove(editCtrl);                
                 editCtrl.Close();
+                FillNotes();
             };
 
             editCtrl.okButton.Click += (s, e) =>
             {
                 notesController.SaveNotes();
-                this.notesPanel.Controls.Remove(editCtrl);
-                FillNotes();
+                this.notesPanel.Controls.Remove(editCtrl);                
                 editCtrl.Close();
+                FillNotes();
             };
 
             this.notesPanel.Controls.Add(editCtrl);
         }
+
+        private void InitHotKeys()
+        {
+            HotKeyManager.AddHotKey(DeleteSelected, Keys.Delete);
+        }
+
+        private void ClearHotKeys()
+        {
+            HotKeyManager.RemoveHotKeys();
+        }
+
+        private void DeleteSelected()
+        {
+            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                NotePreviewControl ctrl = (NotePreviewControl) notesPanel.Controls[i];
+                if (ctrl.Selected)
+                {
+                    notesController.DeleteNote(ctrl.Note);
+                    notesPanel.Controls.RemoveAt(i);
+                    ctrl.Dispose();
+                }
+
+            }
+        }
+
+
     }
 }

@@ -10,18 +10,36 @@ namespace SuperNotesHolder.Utils
 {
     public class HotKeyManager
     {
-        List<KeyEventHandler> delegates = new List<KeyEventHandler>();
+        private List<KeyEventHandler> delegates = new List<KeyEventHandler>();
 
-        public bool Enable = true;
+        private static HotKeyManager instance;
+        private Form mainForm;
 
-        public MainForm MainForm { get; set; }
-
-        public void AddHotKey(NoteEditControl editControl, Action function, Keys key, bool ctrl = false, bool shift = false, bool alt = false)
+        private HotKeyManager()
         {
-            MainForm = editControl.MainForm;
 
-            editControl.MainForm.KeyPreview = true;
+        }
 
+        public static HotKeyManager Default
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new HotKeyManager();
+
+                return instance;
+            }
+        }
+
+        public static Form MainForm
+        {
+            get { return Default.mainForm; }
+            set { Default.mainForm = value; }
+        }
+
+        public static void AddHotKey(Action function, Keys key, bool ctrl = false, bool shift = false, bool alt = false)
+        {
+            Default.mainForm.KeyPreview = true;            
 
             KeyEventHandler keyEventHdl = delegate (object sender, KeyEventArgs e)
             {
@@ -31,23 +49,25 @@ namespace SuperNotesHolder.Utils
                 }
             };
 
-            editControl.MainForm.KeyDown += keyEventHdl;
-            delegates.Add(keyEventHdl);
+            Default.mainForm.KeyDown += keyEventHdl;
+            Default.delegates.Add(keyEventHdl);
 
         }
 
-        public bool IsHotkey(KeyEventArgs eventData, Keys key, bool ctrl = false, bool shift = false, bool alt = false)
+   
+        public static void RemoveHotKeys()
+        {
+            foreach (KeyEventHandler eh in Default.delegates)
+            {
+                Default.mainForm.KeyDown -= eh;
+            }
+
+            Default.delegates.Clear();
+        }
+
+        public static bool IsHotkey(KeyEventArgs eventData, Keys key, bool ctrl = false, bool shift = false, bool alt = false)
         {
             return eventData.KeyCode == key && eventData.Control == ctrl && eventData.Shift == shift && eventData.Alt == alt;
-        }
-
-        public void RemoveHotKeys()
-        {
-            foreach (KeyEventHandler eh in delegates)
-            {
-                MainForm.KeyDown -= eh;
-            }
-            delegates.Clear();
         }
 
 

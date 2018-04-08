@@ -52,9 +52,7 @@ namespace SuperNotesHolder.Forms
         private void xmlButton_Click(object sender, EventArgs e)
         {
             FormatAsXml();
-        }
-
-        private HotKeyManager hotKeyManager;
+        }        
 
         /// <summary>
         /// the background color of the text area
@@ -91,9 +89,7 @@ namespace SuperNotesHolder.Forms
         {
             InitializeComponent();
 
-            MainForm = mainForm;
-
-            hotKeyManager = new HotKeyManager();
+            MainForm = mainForm;            
 
             // INITIAL VIEW CONFIG
             textControl.WrapMode = WrapMode.None;
@@ -122,7 +118,7 @@ namespace SuperNotesHolder.Forms
 
         public void Close()
         {
-            hotKeyManager.RemoveHotKeys();
+            HotKeyManager.RemoveHotKeys();
             this.Dispose();
         }
 
@@ -158,7 +154,7 @@ namespace SuperNotesHolder.Forms
             textControl.Styles[Style.Default].ForeColor = IntToColor(0xFFFFFF);
             textControl.StyleClearAll();
 
-
+            
             // Configure the CPP (C#) lexer styles
             textControl.Styles[Style.Cpp.Identifier].ForeColor = IntToColor(0xD0DAE2);
             textControl.Styles[Style.Cpp.Comment].ForeColor = IntToColor(0xBD758B);
@@ -332,10 +328,10 @@ namespace SuperNotesHolder.Forms
         {
 
             // register the hotkeys with the form
-            hotKeyManager.AddHotKey(this, OpenSearch, Keys.F, true);
-            hotKeyManager.AddHotKey(this, CloseSearch, Keys.Escape);
-            hotKeyManager.AddHotKey(this, FormatAsXml, Keys.X, true, true, true);
-            hotKeyManager.AddHotKey(this, FormatAsJson, Keys.J, true, true, true);
+            HotKeyManager.AddHotKey(OpenSearch, Keys.F, true);
+            HotKeyManager.AddHotKey(CloseSearch, Keys.Escape);
+            HotKeyManager.AddHotKey(FormatAsXml, Keys.X, true, true, true);
+            HotKeyManager.AddHotKey(FormatAsJson, Keys.J, true, true, true);
 
             //HotKeyManager.AddHotKey(this, OpenFindDialog, Keys.F, true, false, true);
             //HotKeyManager.AddHotKey(this, OpenReplaceDialog, Keys.R, true);
@@ -714,11 +710,11 @@ namespace SuperNotesHolder.Forms
 
         private void TxtSearch_KeyDown(object sender, KeyEventArgs e)
         {
-            if (hotKeyManager.IsHotkey(e, Keys.Enter))
+            if (HotKeyManager.IsHotkey(e, Keys.Enter))
             {
                 SearchManager.Find(true, false);
             }
-            if (hotKeyManager.IsHotkey(e, Keys.Enter, true) || hotKeyManager.IsHotkey(e, Keys.Enter, false, true))
+            if (HotKeyManager.IsHotkey(e, Keys.Enter, true) || HotKeyManager.IsHotkey(e, Keys.Enter, false, true))
             {
                 SearchManager.Find(false, false);
             }
