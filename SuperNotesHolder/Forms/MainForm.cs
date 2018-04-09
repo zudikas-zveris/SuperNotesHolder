@@ -342,6 +342,7 @@ namespace SuperNotesHolder
             };
 
             this.notesPanel.Controls.Add(editCtrl);
+            editCtrl.Focus();
         }
 
         private void InitHotKeys()
