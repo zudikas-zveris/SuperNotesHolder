@@ -19,40 +19,6 @@ namespace SuperNotesHolder.Forms
 {
     public partial class NoteEditControl : UserControl
     {
-        
-        private Note note;
-
-        public MainForm MainForm { get; set; }
-
-        public Note Note
-        {
-            get { return note; }
-            set
-            {
-                note = value;
-                textControl.Text = note.Text;
-                textControl.Lexer = note.RenderType;
-                textControl.SetProperty("fold", "1");
-                textControl.SetProperty("fold.compact", "1");
-                textControl.SetProperty("fold.html", "1");
-            }
-        }
-
-
-        private void textControl_TextChanged(object sender, EventArgs e)
-        {
-            Note.Text = textControl.Text;
-        }
-
-        private void jsonButton_Click(object sender, EventArgs e)
-        {
-            FormatAsJson();
-        }
-
-        private void xmlButton_Click(object sender, EventArgs e)
-        {
-            FormatAsXml();
-        }        
 
         /// <summary>
         /// the background color of the text area
@@ -85,11 +51,29 @@ namespace SuperNotesHolder.Forms
         /// </summary>
         private const bool CODEFOLDING_CIRCULAR = true;
 
-        public NoteEditControl(MainForm mainForm)
+
+        private Note note;
+
+
+        public Note Note
+        {
+            get { return note; }
+            set
+            {
+                note = value;
+                if (note == null) note = new Note();
+                textControl.Text = note.Text;
+                textControl.Lexer = note.RenderType;
+                textControl.SetProperty("fold", "1");
+                textControl.SetProperty("fold.compact", "1");
+                textControl.SetProperty("fold.html", "1");
+            }
+        }
+
+
+        public NoteEditControl()
         {
             InitializeComponent();
-
-            MainForm = mainForm;            
 
             // INITIAL VIEW CONFIG
             textControl.WrapMode = WrapMode.None;
@@ -110,10 +94,14 @@ namespace SuperNotesHolder.Forms
 
             // DRAG DROP
             InitDragDropFile();
-                        
 
-            // INIT HOTKEYS
-            InitHotkeys();
+            // remove conflicting hotkeys from scintilla
+            textControl.ClearCmdKey(Keys.Control | Keys.F);
+            textControl.ClearCmdKey(Keys.Control | Keys.R);
+            textControl.ClearCmdKey(Keys.Control | Keys.H);
+            textControl.ClearCmdKey(Keys.Control | Keys.L);
+            textControl.ClearCmdKey(Keys.Control | Keys.U);
+            
         }
 
         public void Close()
@@ -122,6 +110,22 @@ namespace SuperNotesHolder.Forms
             this.Dispose();
         }
 
+
+
+        private void textControl_TextChanged(object sender, EventArgs e)
+        {
+            Note.Text = textControl.Text;
+        }
+
+        private void jsonButton_Click(object sender, EventArgs e)
+        {
+            FormatAsJson();
+        }
+
+        private void xmlButton_Click(object sender, EventArgs e)
+        {
+            FormatAsXml();
+        }
 
         private void textControl_Validated(object sender, EventArgs e)
         {
@@ -133,7 +137,6 @@ namespace SuperNotesHolder.Forms
             notificationTextBox.Text = "";
             notificationPanel.Visible = false;
         }
-
 
 
 
@@ -324,44 +327,14 @@ namespace SuperNotesHolder.Forms
 
 
 
-        private void InitHotkeys()
-        {
-
-            // register the hotkeys with the form
-            HotKeyManager.AddHotKey(OpenSearch, Keys.F, true);
-            HotKeyManager.AddHotKey(CloseSearch, Keys.Escape);
-            HotKeyManager.AddHotKey(FormatAsXml, Keys.X, true, true, true);
-            HotKeyManager.AddHotKey(FormatAsJson, Keys.J, true, true, true);
-
-            //HotKeyManager.AddHotKey(this, OpenFindDialog, Keys.F, true, false, true);
-            //HotKeyManager.AddHotKey(this, OpenReplaceDialog, Keys.R, true);
-            //HotKeyManager.AddHotKey(this, OpenReplaceDialog, Keys.H, true);
-            //HotKeyManager.AddHotKey(this, Uppercase, Keys.U, true);
-            //HotKeyManager.AddHotKey(this, Lowercase, Keys.L, true);
-            //HotKeyManager.AddHotKey(this, ZoomIn, Keys.Oemplus, true);
-            //HotKeyManager.AddHotKey(this, ZoomOut, Keys.OemMinus, true);
-            //HotKeyManager.AddHotKey(this, ZoomDefault, Keys.D0, true);
-
-
-            // remove conflicting hotkeys from scintilla
-            textControl.ClearCmdKey(Keys.Control | Keys.F);
-            textControl.ClearCmdKey(Keys.Control | Keys.R);
-            textControl.ClearCmdKey(Keys.Control | Keys.H);
-            textControl.ClearCmdKey(Keys.Control | Keys.L);
-            textControl.ClearCmdKey(Keys.Control | Keys.U);
-
-        }
-
-
-
-        /*
+        
 
 
 
 
 
-        #region Main Menu Commands
-
+        #region Main Menu Commands NENAUDOJAMA
+/*
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -583,9 +556,9 @@ namespace SuperNotesHolder.Forms
 
 
 
-
+*/
         #endregion
-        */
+        
 
 
         public static Color IntToColor(int rgb)
@@ -605,7 +578,7 @@ namespace SuperNotesHolder.Forms
             }
         }
 
-        private void FormatAsJson()
+        public void FormatAsJson()
         {
             try
             {
@@ -621,7 +594,7 @@ namespace SuperNotesHolder.Forms
             }
         }
 
-        private void FormatAsXml()
+        public void FormatAsXml()
         {
             try
             {
@@ -651,7 +624,7 @@ namespace SuperNotesHolder.Forms
 
         bool SearchIsOpen = false;
 
-        private void OpenSearch()
+        public void OpenSearch()
         {
 
             SearchManager.SearchBox = TxtSearch;
@@ -677,7 +650,8 @@ namespace SuperNotesHolder.Forms
                 });
             }
         }
-        private void CloseSearch()
+
+        public void CloseSearch()
         {
             if (SearchIsOpen)
             {
@@ -699,10 +673,12 @@ namespace SuperNotesHolder.Forms
         {
             SearchManager.Find(false, false);
         }
+
         private void BtnNextSearch_Click(object sender, EventArgs e)
         {
             SearchManager.Find(true, false);
         }
+
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
             SearchManager.Find(true, true);
@@ -728,17 +704,14 @@ namespace SuperNotesHolder.Forms
         {
 
         }
+
         private void OpenReplaceDialog()
         {
 
 
         }
 
-
-
-
         #endregion
-
 
     }
 }

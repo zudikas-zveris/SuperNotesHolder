@@ -30,7 +30,7 @@ namespace SuperNotesHolder
         public NotePreviewControl()
         {
             InitializeComponent();
-
+            
             Selected = false;
         }
 
@@ -52,7 +52,7 @@ namespace SuperNotesHolder
             {
                 textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
                 textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
-            }                
+            }
         }
 
         private void textControl_MouseEnter(object sender, EventArgs e)
@@ -70,7 +70,7 @@ namespace SuperNotesHolder
             {
                 textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
                 textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
-            }                
+            }
         }
     }
 }

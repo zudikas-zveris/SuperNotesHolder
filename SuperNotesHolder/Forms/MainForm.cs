@@ -38,6 +38,7 @@ namespace SuperNotesHolder
         private int normalTop;
         private int normalLeft;
         private bool isExpanded;
+        private bool preventCollapse;
         private DockType dockLocation;
 
         private NotesController notesController;
@@ -46,7 +47,31 @@ namespace SuperNotesHolder
         {
             InitializeComponent();
 
+            this.DoubleBuffered = true;
+
             HotKeyManager.MainForm = this;
+
+            noteEditControl.closeButton.Click += (s, e) => {
+                preventCollapse = true;
+                if (MessageBox.Show("Are you sure you want to delete selected items?", "Delete selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    RemoveNote(noteEditControl.Note);
+                    notesController.DeleteNote(noteEditControl.Note);
+                    noteEditControl.Note = null;
+                    CloseNoteEditControl();
+                }
+                preventCollapse = false;
+            };
+
+            noteEditControl.okButton.Click += (s, e) =>
+            {
+                UpdateNote(noteEditControl.Note);
+                notesController.DeleteNote(noteEditControl.Note);
+                notesController.AddNote(noteEditControl.Note);                
+                notesController.SaveNotes();
+                noteEditControl.Note = null;
+                CloseNoteEditControl();
+            };
 
             normalHeight = Height;
             normalWidth = Width;
@@ -55,6 +80,7 @@ namespace SuperNotesHolder
             dockLocation = DockType.None;
 
             isExpanded = true;
+            preventCollapse = false;
 
             notesController = new NotesController();
             notesController.LoadNotes();
@@ -131,6 +157,11 @@ namespace SuperNotesHolder
             collapseTimer.Start();
         }
 
+        private void addNoteButton_MouseLeave(object sender, EventArgs e)
+        {
+            //FormExpand(false);
+        }
+
         private void MainForm_ResizeEnd(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Normal && isExpanded)
@@ -155,7 +186,7 @@ namespace SuperNotesHolder
 
         private void collapseTimer_Tick(object sender, EventArgs e)
         {            
-           Point pt = PointToClient(Cursor.Position);
+            Point pt = PointToClient(Cursor.Position);
 
             int corY = Height - ClientSize.Height;
             int corX = Width - ClientSize.Width;
@@ -179,25 +210,29 @@ namespace SuperNotesHolder
         {
             Note note = notesController.NewNote();
             ShowNoteEditControl(note);
+            AddNote(note);
         }
 
 
 
         private void FormExpand(bool value)
         {
+            if (isExpanded && preventCollapse && !value)
+                return;
+
             isExpanded = value;
 
             if (value)
             {
                 if (WindowState == FormWindowState.Normal)
-                {
+                {                    
                     FormBorderStyle = FormBorderStyle.Sizable;                    
                     this.Padding = new Padding(0);
                     BackColor = SystemColors.Control;
                     Height = normalHeight;
                     Width = normalWidth;
                     Left = normalLeft;
-                    Top = normalTop;
+                    Top = normalTop;                 
                 }                
             }
             else
@@ -205,9 +240,9 @@ namespace SuperNotesHolder
                 if (dockLocation == DockType.None)
                     return;
 
+                this.Visible = false;
                 this.AutoScrollPosition = new Point(0, 0);
-                FormBorderStyle = FormBorderStyle.None;                
-                BackColor = Color.Red;
+                FormBorderStyle = FormBorderStyle.None;                                
 
                 if (dockLocation == DockType.Top)
                 {                    
@@ -235,6 +270,10 @@ namespace SuperNotesHolder
                     Screen scn = Screen.FromPoint(this.Location);
                     this.Top = scn.Bounds.Bottom - Height;
                 }
+                Application.DoEvents();
+
+                this.Visible = true;
+                BackColor = Color.Red;
 
             }
         }
@@ -247,25 +286,71 @@ namespace SuperNotesHolder
 
         private void FillNotes()
         {
-            foreach(Note note in notesController.Notes)
+            foreach (Note note in notesController.Notes)
             {
-                NotePreviewControl notes = new NotePreviewControl();
-
-                notes.Dock = DockStyle.Top;
-                notes.Note = note;
-                notes.deleteButton.Click += (s, e) =>
-                {
-                    notesController.DeleteNote(note);
-                    notesPanel.Controls.Remove(notes);
-                };
-                notes.textControl.DoubleClick += (s, e) =>
-                {
-                    ShowNoteEditControl(note);
-                };
-                notesPanel.Controls.Add(notes);
+                AddNote(note);
             }
 
             InitHotKeys();
+        }
+
+        private void ClearNotes()
+        {
+            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                Control ctrl = notesPanel.Controls[i];
+                notesPanel.Controls.RemoveAt(i);
+                ctrl.Dispose();
+            }
+        }
+
+        private void AddNote(Note note)
+        {
+            NotePreviewControl notes = new NotePreviewControl();
+
+            notes.Dock = DockStyle.Top;
+            notes.Note = note;
+            notes.deleteButton.Click += (s, e) =>
+            {
+                preventCollapse = true;
+                if (MessageBox.Show("Are you sure you want to delete selected items?", "Delete selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    notesController.DeleteNote(note);
+                    notesPanel.Controls.Remove(notes);
+                }
+                preventCollapse = false;
+            };
+            notes.textControl.DoubleClick += (s, e) =>
+            {
+                ShowNoteEditControl(note);
+            };
+            notesPanel.Controls.Add(notes);
+        }
+
+        private void UpdateNote(Note note)
+        {
+            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                NotePreviewControl ctrl = notesPanel.Controls[i] as NotePreviewControl;
+                if (ctrl.Note == note)
+                {
+                    ctrl.Note = note;
+                    return;
+                }
+            }
+        }
+
+        private void RemoveNote(Note note)
+        {
+            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                NotePreviewControl ctrl = notesPanel.Controls[i] as NotePreviewControl;
+                if (ctrl.Note == note)
+                {
+                    notesPanel.Controls.RemoveAt(i);
+                    ctrl.Dispose();
+                }                
+            }
         }
 
         private void LoadMainFormSettings()
@@ -308,46 +393,46 @@ namespace SuperNotesHolder
         }
 
         private void ShowNoteEditControl(Note note)
+        {            
+            InitEditorHotkeys();
+
+            noteEditControl.Note = note;
+            noteEditControl.BringToFront();
+            noteEditControl.Focus();
+        }
+
+        private void CloseNoteEditControl()
         {
-
-            ClearHotKeys();
-
-            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
-            {
-                Control ctrl = notesPanel.Controls[i];
-                notesPanel.Controls.RemoveAt(i);
-                ctrl.Dispose();
-            }
-                
-            //notesPanel.Controls.Clear();
-
-            NoteEditControl editCtrl = new NoteEditControl(this);            
-            editCtrl.Note = note;
-            editCtrl.BringToFront();
-            editCtrl.Dock = DockStyle.Fill;
-
-            editCtrl.closeButton.Click += (s, e) => {
-                notesController.DeleteNote(note);
-                this.notesPanel.Controls.Remove(editCtrl);                
-                editCtrl.Close();
-                FillNotes();
-            };
-
-            editCtrl.okButton.Click += (s, e) =>
-            {
-                notesController.SaveNotes();
-                this.notesPanel.Controls.Remove(editCtrl);                
-                editCtrl.Close();
-                FillNotes();
-            };
-
-            this.notesPanel.Controls.Add(editCtrl);
-            editCtrl.Focus();
+            noteEditControl.SendToBack();
+            InitHotKeys();
+            this.Focus();
         }
 
         private void InitHotKeys()
         {
+            HotKeyManager.RemoveHotKeys();
             HotKeyManager.AddHotKey(DeleteSelected, Keys.Delete);
+        }
+
+        private void InitEditorHotkeys()
+        {
+            HotKeyManager.RemoveHotKeys();
+
+            // register the hotkeys with the form
+            HotKeyManager.AddHotKey(noteEditControl.OpenSearch, Keys.F, true);
+            HotKeyManager.AddHotKey(noteEditControl.CloseSearch, Keys.Escape);
+            HotKeyManager.AddHotKey(noteEditControl.FormatAsXml, Keys.X, true, true, true);
+            HotKeyManager.AddHotKey(noteEditControl.FormatAsJson, Keys.J, true, true, true);
+
+            //HotKeyManager.AddHotKey(this, OpenFindDialog, Keys.F, true, false, true);
+            //HotKeyManager.AddHotKey(this, OpenReplaceDialog, Keys.R, true);
+            //HotKeyManager.AddHotKey(this, OpenReplaceDialog, Keys.H, true);
+            //HotKeyManager.AddHotKey(this, Uppercase, Keys.U, true);
+            //HotKeyManager.AddHotKey(this, Lowercase, Keys.L, true);
+            //HotKeyManager.AddHotKey(this, ZoomIn, Keys.Oemplus, true);
+            //HotKeyManager.AddHotKey(this, ZoomOut, Keys.OemMinus, true);
+            //HotKeyManager.AddHotKey(this, ZoomDefault, Keys.D0, true);
+
         }
 
         private void ClearHotKeys()
@@ -357,17 +442,24 @@ namespace SuperNotesHolder
 
         private void DeleteSelected()
         {
-            for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
-            {
-                NotePreviewControl ctrl = (NotePreviewControl) notesPanel.Controls[i];
-                if (ctrl.Selected)
-                {
-                    notesController.DeleteNote(ctrl.Note);
-                    notesPanel.Controls.RemoveAt(i);
-                    ctrl.Dispose();
-                }
+            preventCollapse = true;
 
+            if (MessageBox.Show("Are you sure you want to delete selected items?", "Delete selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                for (int i = notesPanel.Controls.Count - 1; i >= 0; i--)
+                {
+                    NotePreviewControl ctrl = (NotePreviewControl)notesPanel.Controls[i];
+                    if (ctrl.Selected)
+                    {
+                        notesController.DeleteNote(ctrl.Note);
+                        notesPanel.Controls.RemoveAt(i);
+                        ctrl.Dispose();
+                    }
+
+                }
             }
+
+            preventCollapse = false;
         }
 
 

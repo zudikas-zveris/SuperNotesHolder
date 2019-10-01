@@ -55,6 +55,13 @@ namespace SuperNotesHolder.Controllers
             return note;
         }
 
+        internal Note AddNote(Note note)
+        {            
+            Notes.Add(note);
+            SaveNotes();
+            return note;
+        }
+
         internal void DeleteNote(Note note)
         {
             Notes.Remove(note);
