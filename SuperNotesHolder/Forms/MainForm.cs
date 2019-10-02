@@ -73,6 +73,7 @@ namespace SuperNotesHolder
                 CloseNoteEditControl();
             };
 
+
             normalHeight = Height;
             normalWidth = Width;
             normalTop = Top;
@@ -193,11 +194,19 @@ namespace SuperNotesHolder
 
             if (pt.X >= -corX && pt.Y >= -corY && pt.X <= Width && pt.Y <= Height)
             {
-                
+                // inside
             }
             else
-            {
-                if (!ContainsFocus)
+            {                
+                var ctrl = FindFocusedControl(this);
+                
+                if (ctrl == addNoteButton)
+                {                    
+                    this.ActiveControl = null;
+                }
+
+
+                if (!ContainsFocus || (ContainsFocus && ctrl == null))
                 {
                     FormExpand(false);
                     collapseTimer.Stop();
@@ -232,7 +241,8 @@ namespace SuperNotesHolder
                     Height = normalHeight;
                     Width = normalWidth;
                     Left = normalLeft;
-                    Top = normalTop;                 
+                    Top = normalTop;
+                    addNoteButton.Focus();
                 }                
             }
             else
@@ -405,7 +415,7 @@ namespace SuperNotesHolder
         {
             noteEditControl.SendToBack();
             InitHotKeys();
-            this.Focus();
+            addNoteButton.Focus();            
         }
 
         private void InitHotKeys()
@@ -462,6 +472,15 @@ namespace SuperNotesHolder
             preventCollapse = false;
         }
 
-
+        private Control FindFocusedControl(Control control)
+        {
+            var container = control as IContainerControl;
+            while (container != null)
+            {
+                control = container.ActiveControl;
+                container = control as IContainerControl;
+            }
+            return control;
+        }
     }
 }
