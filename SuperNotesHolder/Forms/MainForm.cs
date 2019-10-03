@@ -62,7 +62,6 @@ namespace SuperNotesHolder
                 }
                 preventCollapse = false;
             };
-
             noteEditControl.okButton.Click += (s, e) =>
             {
                 UpdateNote(noteEditControl.Note);
@@ -72,7 +71,6 @@ namespace SuperNotesHolder
                 noteEditControl.Note = null;
                 CloseNoteEditControl();
             };
-
 
             normalHeight = Height;
             normalWidth = Width;
@@ -163,8 +161,14 @@ namespace SuperNotesHolder
             //FormExpand(false);
         }
 
+        private void MainForm_ResizeBegin(object sender, EventArgs e)
+        {
+            preventCollapse = true;
+        }
+
         private void MainForm_ResizeEnd(object sender, EventArgs e)
         {
+            preventCollapse = false;
             if (WindowState == FormWindowState.Normal && isExpanded)
             {
                 normalHeight = Height;
@@ -482,5 +486,7 @@ namespace SuperNotesHolder
             }
             return control;
         }
+
+
     }
 }

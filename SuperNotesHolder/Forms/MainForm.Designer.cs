@@ -105,6 +105,7 @@ namespace SuperNotesHolder
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
             this.LocationChanged += new System.EventHandler(this.MainForm_LocationChanged);
             this.MouseEnter += new System.EventHandler(this.MainForm_MouseEnter);

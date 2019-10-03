@@ -256,8 +256,7 @@ namespace SuperNotesHolder.Forms
 
         private void InitCodeFolding()
         {
-            textControl.Lexer = Lexer.Json;            
-
+            //textControl.Lexer = Lexer.Json;            
 
             textControl.SetFoldMarginColor(true, IntToColor(BACK_COLOR));
             textControl.SetFoldMarginHighlightColor(true, IntToColor(BACK_COLOR));
@@ -585,6 +584,7 @@ namespace SuperNotesHolder.Forms
                 textControl.Text = JValue.Parse(textControl.Text).ToString(Formatting.Indented);
                 textControl.Lexer = Lexer.Json;                
                 Note.RenderType = Lexer.Json;
+                InitCodeFolding();
             }
             catch (Exception ex)
             {
@@ -602,9 +602,10 @@ namespace SuperNotesHolder.Forms
                 textControl.Text = doc.ToString();
                 textControl.Lexer = Lexer.Xml;                
                 Note.RenderType = Lexer.Xml;
+                InitCodeFolding();
             }
             catch (Exception ex)
-            {
+            {                
                 notificationPanel.Visible = true;
                 notificationTextBox.Text = ex.Message;
                 //MessageBox.Show("Parse error!\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -661,6 +662,10 @@ namespace SuperNotesHolder.Forms
                     PanelSearch.Visible = false;
                     //CurBrowser.GetBrowser().StopFinding(true);
                 });
+            }
+            else
+            {
+                okButton.PerformClick();
             }
         }
 
