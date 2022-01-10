@@ -1,4 +1,6 @@
-﻿namespace SuperNotesHolder
+﻿using SuperNotesHolder.Controls;
+
+namespace SuperNotesHolder
 {
     partial class NotePreviewControl
     {
@@ -30,7 +32,7 @@
         {
             this.deleteButton = new System.Windows.Forms.Button();
             this.timeLabel = new System.Windows.Forms.Label();
-            this.textControl = new System.Windows.Forms.Label();
+            this.textControl = new LabelMod();
             this.SuspendLayout();
             // 
             // deleteButton
@@ -60,10 +62,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textControl.BackColor = System.Drawing.Color.White;
-            this.textControl.Location = new System.Drawing.Point(-1, 26);
+            this.textControl.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textControl.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.textControl.Location = new System.Drawing.Point(3, 23);            
             this.textControl.Name = "textControl";
-            this.textControl.Size = new System.Drawing.Size(441, 70);
-            this.textControl.TabIndex = 3;
+            this.textControl.Size = new System.Drawing.Size(437, 73);
+            this.textControl.TabIndex = 4;
             this.textControl.Click += new System.EventHandler(this.textControl_Click);
             this.textControl.MouseEnter += new System.EventHandler(this.textControl_MouseEnter);
             this.textControl.MouseLeave += new System.EventHandler(this.textControl_MouseLeave);
@@ -87,6 +91,6 @@
 
         internal System.Windows.Forms.Button deleteButton;
         internal System.Windows.Forms.Label timeLabel;
-        internal System.Windows.Forms.Label textControl;
+        internal LabelMod textControl;
     }
 }

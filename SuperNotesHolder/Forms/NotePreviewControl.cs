@@ -14,7 +14,31 @@ namespace SuperNotesHolder
 {
     public partial class NotePreviewControl : UserControl
     {
-        public bool Selected { get; set; }
+        public delegate void SelectionChangeHandler(object sender, EventArgs e);
+        public event SelectionChangeHandler OnSelectionChanged;
+
+        private bool selected;
+
+        public bool Selected {
+            get { return selected; }
+            set {
+                selected = value;
+                if (selected)
+                {
+                    textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.selectBackColor");
+                    textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.selectForeColor");
+                }
+                else
+                {
+                    textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
+                    textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
+                }
+
+                if (OnSelectionChanged == null) return;
+                SelectionChangedEventArgs args = new SelectionChangedEventArgs(selected);
+                OnSelectionChanged(this, args);
+            }
+        }
 
         private Note note;
 
@@ -30,7 +54,7 @@ namespace SuperNotesHolder
         public NotePreviewControl()
         {
             InitializeComponent();
-
+            
             Selected = false;
         }
 
@@ -43,16 +67,6 @@ namespace SuperNotesHolder
         private void textControl_Click(object sender, EventArgs e)
         {
             Selected = !Selected;
-            if (Selected)
-            {
-                textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.selectBackColor");
-                textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.selectForeColor");
-            }
-            else
-            {
-                textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
-                textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
-            }                
         }
 
         private void textControl_MouseEnter(object sender, EventArgs e)
@@ -70,7 +84,19 @@ namespace SuperNotesHolder
             {
                 textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
                 textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
-            }                
+            }
+        }
+
+
+
+        public class SelectionChangedEventArgs : EventArgs
+        {
+            public bool Selected { get; private set; }
+
+            public SelectionChangedEventArgs(bool selected)
+            {
+                Selected = selected;
+            }
         }
     }
 }
