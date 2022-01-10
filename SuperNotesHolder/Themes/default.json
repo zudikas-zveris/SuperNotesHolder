@@ -1,4 +1,8 @@
 ﻿{
+  "mainForm.backColor": "#000000",
+  "mainForm.foreColor": "#ffffff",
+
+
   "preview.textControl.backColor": "#ffffff",
   "preview.textControl.foreColor": "#000000",
 

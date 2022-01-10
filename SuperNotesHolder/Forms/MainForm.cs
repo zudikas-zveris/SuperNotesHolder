@@ -48,6 +48,9 @@ namespace SuperNotesHolder
 
             HotKeyManager.MainForm = this;
 
+            //BackColor = ThemeManager.Theme.GetColor("mainForm.backColor");
+            //ForeColor = ThemeManager.Theme.GetColor("mainForm.foreColor");
+
             normalHeight = Height;
             normalWidth = Width;
             normalTop = Top;

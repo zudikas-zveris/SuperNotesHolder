@@ -44,6 +44,7 @@
             // 
             this.addNoteButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.addNoteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.addNoteButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(186)));
             this.addNoteButton.Location = new System.Drawing.Point(2, 2);
             this.addNoteButton.Name = "addNoteButton";
@@ -68,6 +69,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.DimGray;
             this.ClientSize = new System.Drawing.Size(486, 609);
             this.Controls.Add(this.notesPanel);
             this.Controls.Add(this.addNoteButton);
