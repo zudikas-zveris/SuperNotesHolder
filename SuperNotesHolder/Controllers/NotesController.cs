@@ -13,10 +13,15 @@ namespace SuperNotesHolder.Controllers
     {
         public List<Note> Notes { get; set; }
 
+#if DEBUG 
+        private const string NotesFile = "data_DEBUG.json";
+#else
+        private const string NotesFile = "data.json";
+#endif
 
         public void LoadNotes()
         {
-            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SuperNotesHolder", "data.json");
+            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SuperNotesHolder", NotesFile);
 
             if (File.Exists(fileName))
             {
@@ -40,7 +45,7 @@ namespace SuperNotesHolder.Controllers
                 Directory.CreateDirectory(folder);
             }
 
-            var fileName = Path.Combine(folder, "data.json");
+            var fileName = Path.Combine(folder, NotesFile);
             
             string notesJson = JsonConvert.SerializeObject(Notes);
 

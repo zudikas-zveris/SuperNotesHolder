@@ -199,6 +199,7 @@ namespace SuperNotesHolder
             if (pt.X >= -corX && pt.Y >= -corY && pt.X <= Width && pt.Y <= Height)
             {
                 // inside
+                Console.WriteLine("inside");
             }
             else
             {                
@@ -208,7 +209,6 @@ namespace SuperNotesHolder
                 {                    
                     this.ActiveControl = null;
                 }
-
 
                 if (!ContainsFocus || (ContainsFocus && ctrl == null))
                 {
