@@ -110,7 +110,7 @@ namespace SuperNotesHolder
 
             if (this.Left <= screenRect.Left || DoSnap(this.Left, screenRect.Left))
             {
-                this.Left = screenRect.Left - 5;
+                this.Left = screenRect.Left;
             }
 
             if (this.Right >= screenRect.Right || DoSnap(screenRect.Right, this.Right))
