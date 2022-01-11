@@ -76,7 +76,7 @@ namespace SuperNotesHolder
             this.noteEditControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.noteEditControl.Location = new System.Drawing.Point(2, 69);
+            this.noteEditControl.Location = new System.Drawing.Point(2, 42);
             this.noteEditControl.Name = "noteEditControl";
             note1.FilePath = null;
             note1.Local = true;
@@ -85,7 +85,7 @@ namespace SuperNotesHolder
             note1.Text = null;
             note1.TimeStamp = new System.DateTime(2019, 10, 1, 15, 54, 37, 963);
             this.noteEditControl.Note = note1;
-            this.noteEditControl.Size = new System.Drawing.Size(483, 539);
+            this.noteEditControl.Size = new System.Drawing.Size(483, 566);
             this.noteEditControl.TabIndex = 6;
             // 
             // MainForm
@@ -94,8 +94,8 @@ namespace SuperNotesHolder
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
             this.ClientSize = new System.Drawing.Size(486, 609);
-            this.Controls.Add(this.notesPanel);
             this.Controls.Add(this.addNoteButton);
+            this.Controls.Add(this.notesPanel);
             this.Controls.Add(this.noteEditControl);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
