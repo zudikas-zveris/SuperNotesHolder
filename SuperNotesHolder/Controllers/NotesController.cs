@@ -72,5 +72,13 @@ namespace SuperNotesHolder.Controllers
             Notes.Remove(note);
             SaveNotes();
         }
+
+        internal void MoveUpNote(Note note)
+        {
+            note.TimeStamp = DateTime.Now;
+            Notes.Remove(note);
+            Notes.Add(note);
+            SaveNotes();
+        }
     }
 }

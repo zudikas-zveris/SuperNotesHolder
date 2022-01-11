@@ -15,7 +15,6 @@ using SuperNotesHolder.Models;
 using Newtonsoft.Json;
 using SuperNotesHolder.Forms;
 using SuperNotesHolder.Utils;
-using static SuperNotesHolder.NotePreviewControl;
 
 namespace SuperNotesHolder
 {
@@ -110,7 +109,7 @@ namespace SuperNotesHolder
 
             if (this.Left <= screenRect.Left || DoSnap(this.Left, screenRect.Left))
             {
-                this.Left = screenRect.Left - 5;
+                this.Left = screenRect.Left;
             }
 
             if (this.Right >= screenRect.Right || DoSnap(screenRect.Right, this.Right))
@@ -200,7 +199,6 @@ namespace SuperNotesHolder
             if (pt.X >= -corX && pt.Y >= -corY && pt.X <= Width && pt.Y <= Height)
             {
                 // inside
-                //Console.WriteLine("inside");
             }
             else
             {                
@@ -210,6 +208,7 @@ namespace SuperNotesHolder
                 {                    
                     this.ActiveControl = null;
                 }
+
 
                 if (!ContainsFocus || (ContainsFocus && ctrl == null))
                 {
@@ -301,8 +300,6 @@ namespace SuperNotesHolder
 
         private void FillNotes()
         {
-            notesPanel.Controls.Clear();
-
             foreach (Note note in notesController.Notes)
             {
                 AddNote(note);
@@ -337,18 +334,10 @@ namespace SuperNotesHolder
                 }
                 preventCollapse = false;
             };
-
             notes.textControl.DoubleClick += (s, e) =>
             {
                 ShowNoteEditControl(note);
             };
-
-            notes.OnMoveUp += (s, e) =>
-            {
-                notesController.MoveUpNote(((MoveUpEventArgs)e).Note);
-                FillNotes();
-            };
-
             notesPanel.Controls.Add(notes);
         }
 

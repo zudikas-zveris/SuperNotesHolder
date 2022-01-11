@@ -17,6 +17,9 @@ namespace SuperNotesHolder
         public delegate void SelectionChangeHandler(object sender, EventArgs e);
         public event SelectionChangeHandler OnSelectionChanged;
 
+        public delegate void MoveUpHandler(object sender, EventArgs e);
+        public event MoveUpHandler OnMoveUp;
+
         private bool selected;
 
         public bool Selected {
@@ -97,6 +100,23 @@ namespace SuperNotesHolder
             {
                 Selected = selected;
             }
+        }
+
+        public class MoveUpEventArgs : EventArgs
+        {
+            public Note Note { get; private set; }
+
+            public MoveUpEventArgs(Note note)
+            {
+                Note = note;
+            }
+        }
+
+        private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (OnMoveUp == null) return;
+            MoveUpEventArgs args = new MoveUpEventArgs(Note);
+            OnMoveUp(this, args);
         }
     }
 }

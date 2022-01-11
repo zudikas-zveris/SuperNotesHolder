@@ -52,7 +52,7 @@ namespace SuperNotesHolder
             this.addNoteButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(186)));
             this.addNoteButton.Location = new System.Drawing.Point(2, 2);
             this.addNoteButton.Name = "addNoteButton";
-            this.addNoteButton.Size = new System.Drawing.Size(483, 66);
+            this.addNoteButton.Size = new System.Drawing.Size(483, 39);
             this.addNoteButton.TabIndex = 2;
             this.addNoteButton.Text = "Click to add note";
             this.addNoteButton.UseVisualStyleBackColor = true;
@@ -65,9 +65,9 @@ namespace SuperNotesHolder
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.notesPanel.AutoScroll = true;
-            this.notesPanel.Location = new System.Drawing.Point(2, 69);
+            this.notesPanel.Location = new System.Drawing.Point(2, 42);
             this.notesPanel.Name = "notesPanel";
-            this.notesPanel.Size = new System.Drawing.Size(482, 539);
+            this.notesPanel.Size = new System.Drawing.Size(482, 566);
             this.notesPanel.TabIndex = 5;
             this.notesPanel.TabStop = true;
             // 
