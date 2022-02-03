@@ -87,6 +87,22 @@ namespace SuperNotesHolder
             FillNotes();            
         }
 
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+
+                if (!isExpanded)
+                {
+                    // turn on WS_EX_TOOLWINDOW style bit
+                    cp.ExStyle |= 0x80;
+                }
+                    
+
+                return cp;
+            }
+        }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
@@ -226,8 +242,6 @@ namespace SuperNotesHolder
             ShowNoteEditControl(note);
             AddNote(note);
         }
-
-
 
         private void FormExpand(bool value)
         {
