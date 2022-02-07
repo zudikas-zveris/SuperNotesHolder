@@ -14,13 +14,13 @@ namespace SuperNotesHolder
 {
     public partial class NotePreviewControl : UserControl
     {
-        public delegate void SelectionChangeHandler(object sender, EventArgs e);
+        public delegate void SelectionChangeHandler(object sender, SelectionChangedEventArgs e);
         public event SelectionChangeHandler OnSelectionChanged;
 
         public delegate void MoveUpHandler(object sender, EventArgs e);
         public event MoveUpHandler OnMoveUp;
 
-        private bool selected;
+        private bool selected;       
 
         public bool Selected {
             get { return selected; }
@@ -36,10 +36,6 @@ namespace SuperNotesHolder
                     textControl.BackColor = ThemeManager.Theme.GetColor("preview.textControl.backColor");
                     textControl.ForeColor = ThemeManager.Theme.GetColor("preview.textControl.foreColor");
                 }
-
-                if (OnSelectionChanged == null) return;
-                SelectionChangedEventArgs args = new SelectionChangedEventArgs(selected);
-                OnSelectionChanged(this, args);
             }
         }
 
@@ -69,7 +65,15 @@ namespace SuperNotesHolder
 
         private void textControl_Click(object sender, EventArgs e)
         {
+            var ctrlPressed = Form.ModifierKeys == Keys.Control;
+            var shiftPressed = Form.ModifierKeys == Keys.Shift;
             Selected = !Selected;
+
+            if (OnSelectionChanged == null) return;
+
+            SelectionChangedEventArgs args = new SelectionChangedEventArgs(selected, ctrlPressed, shiftPressed);
+            OnSelectionChanged(this, args);
+
         }
 
         private void textControl_MouseEnter(object sender, EventArgs e)
@@ -95,10 +99,14 @@ namespace SuperNotesHolder
         public class SelectionChangedEventArgs : EventArgs
         {
             public bool Selected { get; private set; }
+            public bool CtrlPressed { get; private set; }
+            public bool ShiftPressed { get; private set; }
 
-            public SelectionChangedEventArgs(bool selected)
+            public SelectionChangedEventArgs(bool selected, bool ctrlPressed = false, bool shiftPressed = false)
             {
                 Selected = selected;
+                CtrlPressed = ctrlPressed;
+                ShiftPressed = shiftPressed;
             }
         }
 

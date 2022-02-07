@@ -44,11 +44,14 @@ namespace SuperNotesHolder
 
         private NotesController notesController;
 
+        private bool editMode;
+
         public MainForm()
         {
             InitializeComponent();
 
             this.DoubleBuffered = true;
+            this.editMode = false;
 
             HotKeyManager.MainForm = this;
 
@@ -301,6 +304,14 @@ namespace SuperNotesHolder
                 }
                 Application.DoEvents();
 
+                if (editMode)
+                {
+                    UpdateNote(noteEditControl.Note);
+                    notesController.DeleteNote(noteEditControl.Note);
+                    notesController.AddNote(noteEditControl.Note);
+                    notesController.SaveNotes();
+                }
+                
                 this.Visible = true;
                 BackColor = Color.Red;
 
@@ -337,33 +348,50 @@ namespace SuperNotesHolder
 
         private void AddNote(Note note)
         {
-            NotePreviewControl notes = new NotePreviewControl();
+            NotePreviewControl notesPrevieControl = new NotePreviewControl();
 
-            notes.Dock = DockStyle.Top;
-            notes.Note = note;
-            notes.deleteButton.Click += (s, e) =>
+            notesPrevieControl.Dock = DockStyle.Top;
+            notesPrevieControl.Note = note;
+            notesPrevieControl.deleteButton.Click += (s, e) =>
             {
                 preventCollapse = true;
                 if (MessageBox.Show("Are you sure you want to delete selected items?", "Delete selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     notesController.DeleteNote(note);
-                    notesPanel.Controls.Remove(notes);
+                    notesPanel.Controls.Remove(notesPrevieControl);
                 }
                 preventCollapse = false;
             };
 
-            notes.textControl.DoubleClick += (s, e) =>
+            notesPrevieControl.textControl.DoubleClick += (s, e) =>
             {
                 ShowNoteEditControl(note);
             };
 
-            notes.OnMoveUp += (s, e) =>
+            notesPrevieControl.OnMoveUp += (s, e) =>
             {
                 notesController.MoveUpNote(((MoveUpEventArgs)e).Note);
                 FillNotes();
             };
 
-            notesPanel.Controls.Add(notes);
+            notesPrevieControl.OnSelectionChanged += (s, e) => { 
+                if (e.CtrlPressed)
+                {
+                    //append sellected
+                } 
+                else
+                {
+                    foreach (NotePreviewControl nCtrl in notesPanel.Controls)
+                    {
+                        if (nCtrl != notesPrevieControl)
+                        {                            
+                            nCtrl.Selected = false;                            
+                        }
+                    }
+                }
+            };
+
+            notesPanel.Controls.Add(notesPrevieControl);
         }
 
         private void UpdateNote(Note note)
@@ -438,13 +466,17 @@ namespace SuperNotesHolder
             noteEditControl.Note = note;
             noteEditControl.BringToFront();
             noteEditControl.Focus();
+
+            this.editMode = true;
         }
 
         private void CloseNoteEditControl()
         {
             noteEditControl.SendToBack();
             InitHotKeys();
-            addNoteButton.Focus();            
+            addNoteButton.Focus();
+
+            this.editMode = false;
         }
 
         private void InitHotKeys()
