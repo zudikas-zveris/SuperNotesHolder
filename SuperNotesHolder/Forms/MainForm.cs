@@ -107,6 +107,9 @@ namespace SuperNotesHolder
             }
         }
 
+
+        #region Events
+
         private void MainForm_Shown(object sender, EventArgs e)
         {
             LoadMainFormSettings();
@@ -230,7 +233,7 @@ namespace SuperNotesHolder
                     this.ActiveControl = null;
                 }
 
-                if (!ContainsFocus || (ContainsFocus && ctrl == null))
+                if (!editMode && (!ContainsFocus || (ContainsFocus && ctrl == null)))
                 {
                     FormExpand(false);
                     collapseTimer.Stop();
@@ -245,6 +248,11 @@ namespace SuperNotesHolder
             ShowNoteEditControl(note);
             AddNote(note);
         }
+
+        #endregion
+
+
+        #region Private methods
 
         private void FormExpand(bool value)
         {
@@ -544,6 +552,7 @@ namespace SuperNotesHolder
             return control;
         }
 
+        #endregion
 
     }
 }
